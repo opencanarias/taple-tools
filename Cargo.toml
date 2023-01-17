@@ -1,0 +1,22 @@
+[workspace]
+
+members = [
+    "taple-keygen",
+    "taple-sign"
+]
+
+[profile.release]
+lto = true
+codegen-units = 1
+debug = false
+debug-assertions = false
+panic = "abort"
+
+[profile.test]
+debug = true
+
+[profile.dev]
+debug = true
+
+[profile.doc]
+debug-assertions = false

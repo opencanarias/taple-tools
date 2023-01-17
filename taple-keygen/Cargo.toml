@@ -1,0 +1,12 @@
+[package]
+name = "taple-keygen"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.0.27", features = ["derive"] }
+commons = { path = "../../taple-core/commons" }
+hex = "0.4.3"
+libp2p = { version = "0.50.0", features = ["secp256k1"] }
