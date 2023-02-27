@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-commons = { path = "../../taple-core/commons" }
-core = { path = "../../taple-core/core" }
+taple_core = { workspace = true }
+commons = { workspace = true }
 hex = "0.4.3"
 clap = { version = "4.0.27", features = ["derive"] }
 serde_json = "1.0"
