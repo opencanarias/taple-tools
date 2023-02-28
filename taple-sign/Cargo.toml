@@ -1,14 +1,16 @@
 [package]
 name = "taple-sign"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+documentation.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 taple_core = { workspace = true }
 commons = { workspace = true }
-hex = "0.4.3"
-clap = { version = "4.0.27", features = ["derive"] }
-serde_json = "1.0"
-chrono={ version = "0.4", features = ["clock"]}
+hex = { workspace = true }
+clap = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
