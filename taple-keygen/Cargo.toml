@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.27", features = ["derive"] }
-commons = { path = "../../taple-core/commons" }
+taple_core = { workspace = true }
+commons = { workspace = true }
 hex = "0.4.3"
 libp2p = { version = "0.50.0", features = ["secp256k1"] }

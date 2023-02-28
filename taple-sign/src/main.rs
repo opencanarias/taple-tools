@@ -4,15 +4,15 @@ use commons::{
     crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA},
     identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier},
 };
-use core::{
+use std::str::FromStr;
+use taple_core::{
     event_request::{EventRequestType, StateRequest},
     signature::{Signature, SignatureContent},
 };
-use core::{
+use taple_core::{
     ExternalEventRequestBody, SignatureRequest, SignatureRequestContent, StateRequestBody,
     StateRequestBodyUpper,
 };
-use std::str::FromStr;
 
 #[derive(Parser, Default, Debug)]
 #[clap(
