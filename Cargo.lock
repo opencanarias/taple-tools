@@ -4477,7 +4477,7 @@ dependencies = [
 
 [[package]]
 name = "taple-keygen"
-version = "0.1.2"
+version = "0.2.0-dev"
 dependencies = [
  "clap 4.1.6",
  "commons",
@@ -4488,7 +4488,7 @@ dependencies = [
 
 [[package]]
 name = "taple-sign"
-version = "0.1.2"
+version = "0.2.0-dev"
 dependencies = [
  "chrono",
  "clap 4.1.6",
