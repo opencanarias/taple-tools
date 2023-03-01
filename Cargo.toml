@@ -5,6 +5,7 @@ members = [
     "taple-sign"
 ]
 
+
 [workspace.package]
 version = "0.1.2"
 authors = ["Open Canarias S.L.<taple@opencanarias.com>"]
@@ -25,7 +26,6 @@ hex = "0.4.3"
 libp2p = { version = "0.50.0", features = ["secp256k1"] }
 serde_json = "1.0"
 chrono= { version = "0.4", features = ["clock"]}
-
 
 [profile.release]
 lto = true
