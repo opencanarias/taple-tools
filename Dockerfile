@@ -3,8 +3,7 @@ WORKDIR /app
 RUN apt update
 RUN apt install -y libprotobuf-dev protobuf-compiler
 RUN apt install cmake -y
-COPY ./taple-tools taple-tools
-COPY ./taple-core taple-core
+COPY . taple-tools
 WORKDIR /app/taple-tools
 RUN cargo install --path taple-keygen
 RUN cargo install --path taple-sign
