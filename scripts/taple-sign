@@ -18,4 +18,4 @@ echo;
 SIGN_PAYLOAD=$input
 
 # docker run --rm -e TOOL=sign -e SIGN_PRIVATE_KEY=$1 -e SIGN_PAYLOAD="$2" $TOOLS_IMAGE
-docker run --rm --name docker-taple-sign $TOOLS_IMAGE taple-sign $SIGN_PRIVATE_KEY $SIGN_PAYLOAD
+docker run --rm --name docker-taple-sign $TOOLS_IMAGE taple-sign $SIGN_PRIVATE_KEY $SIGN_PAYLOAD ${@:3}

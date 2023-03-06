@@ -2,7 +2,6 @@
 
 members = ["taple-keygen", "taple-sign"]
 
-
 [workspace.package]
 version = "0.2.0-dev"
 authors = ["Open Canarias S.L.<taple@opencanarias.com>"]

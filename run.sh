@@ -1,6 +1,4 @@
 #!/bin/bash
-echo "Arguments received:"
-echo "$@"
 
 if [ $# == 0 ]; then
   echo -e "${RED}No arguments passed${NC}"
