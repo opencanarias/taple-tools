@@ -36,7 +36,7 @@ enum Algorithm {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let tmp: Vec<String> = std::env::args().collect();
-    println!("{:?}", tmp);
+    //println!("{:?}", tmp);
     let (kp, alg_name, peer_id) = match args.mode.unwrap_or(Algorithm::Ed25519) {
         Algorithm::Ed25519 => {
             let keys = generate_ed25519();
