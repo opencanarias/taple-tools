@@ -1,8 +1,6 @@
 use clap::{Parser, ValueEnum};
-use commons::{
-    crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Secp256k1KeyPair},
-    identifier::{Derivable, KeyIdentifier},
-};
+use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Secp256k1KeyPair};
+use taple_core::identifier::{Derivable, KeyIdentifier};
 use libp2p::core::PeerId;
 use libp2p::identity::{ed25519::Keypair as EdKeyPair, secp256k1::SecretKey};
 
@@ -35,8 +33,6 @@ enum Algorithm {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    let tmp: Vec<String> = std::env::args().collect();
-    //println!("{:?}", tmp);
     let (kp, alg_name, peer_id) = match args.mode.unwrap_or(Algorithm::Ed25519) {
         Algorithm::Ed25519 => {
             let keys = generate_ed25519();
