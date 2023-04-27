@@ -1,19 +1,11 @@
 use chrono::Utc;
 use clap::Parser;
-use commons::{
-    crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA},
-    identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier},
-};
-use std::str::FromStr;
-use taple_core::{
-    event_request::{EventRequestType, StateRequest},
-    signature::{Signature, SignatureContent},
-};
-use taple_core::{
-    ExternalEventRequestBody, SignatureRequest, SignatureRequestContent, StateRequestBody,
-    StateRequestBodyUpper,
-};
+use taple_core::TimeStamp;
+use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA};
+use taple_core::identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier};
 
+mod model;
+use model::*;
 #[derive(Parser, Default, Debug)]
 #[clap(
     version,
@@ -37,26 +29,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             args.request
         }
     };
-    let request_data: StateRequestBody = serde_json::from_str(&request)?;
-    let request = EventRequestType::State(StateRequest {
-        subject_id: DigestIdentifier::from_str(&request_data.subject_id)?,
-        payload: request_data.payload.clone().into(),
-    });
+    let request: EventRequestTypeBody = serde_json::from_str(&request)?;
     let timestamp = Utc::now().timestamp_millis();
-    let signature: Signature = sign(&key_pair, request, timestamp)?;
-    let external_request = ExternalEventRequestBody {
-        request: StateRequestBodyUpper {
-            State: request_data,
-        },
-        timestamp,
-        signature: SignatureRequest {
-            content: SignatureRequestContent {
-                signer: signature.content.signer.clone().to_str(),
-                event_content_hash: signature.content.event_content_hash.clone().to_str(),
-                timestamp: signature.content.timestamp,
-            },
-            signature: signature.signature.to_str(),
-        },
+    let signature: Signature = sign(&key_pair, &request, timestamp)?;
+
+    let external_request = EventRequest {
+        request,
+        timestamp: TimeStamp { time: timestamp as u64 },
+        signature,
     };
     let result: String = serde_json::to_string_pretty(&external_request)?;
     println!("{}", result);
@@ -65,19 +45,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn sign(
     keys: &KeyPair,
-    data: EventRequestType,
+    data: &EventRequestTypeBody,
     timestamp: i64,
 ) -> Result<Signature, Box<dyn std::error::Error>> {
-    let hash = DigestIdentifier::from_serializable_borsh((data, timestamp))?;
+    let hash = DigestIdentifier::from_serializable_borsh(&(data, timestamp))?;
     let signature = keys.sign(Payload::Buffer(hash.derivative()))?;
     let identifier = generate_identifier(&keys);
     Ok(Signature {
         content: SignatureContent {
-            signer: identifier.clone(),
-            event_content_hash: hash,
-            timestamp: Utc::now().timestamp_millis(),
+            signer: identifier.to_str(),
+            event_content_hash: hash.to_str(),
+            timestamp: TimeStamp::now(),
         },
-        signature: SignatureIdentifier::new(identifier.to_signature_derivator(), &signature),
+        signature: SignatureIdentifier::new(identifier.to_signature_derivator(), &signature).to_str(),
     })
 }
 
