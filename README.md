@@ -31,7 +31,6 @@ Visit the [TAPLE Tools guide](https://www.taple.es/docs/develop/taple-tools) to 
 
 ### Build From Source
 ```bash
-$ git clone https://github.com/opencanarias/taple-core.git
 $ git clone https://github.com/opencanarias/taple-tools.git
 $ cd taple-tools
 $ cargo install --path taple-keygen
