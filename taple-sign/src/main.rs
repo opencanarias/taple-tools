@@ -1,8 +1,9 @@
 use chrono::Utc;
 use clap::Parser;
-use taple_core::TimeStamp;
+use taple_core::{TimeStamp, EventRequestType};
 use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA};
 use taple_core::identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier};
+
 
 mod model;
 use model::*;
@@ -29,12 +30,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             args.request
         }
     };
-    let request: EventRequestTypeBody = serde_json::from_str(&request)?;
+    let request_body: EventRequestTypeBody = serde_json::from_str(&request)?;
+    let request: EventRequestType = request_body.clone().into();
+
     let timestamp = Utc::now().timestamp_millis();
     let signature: Signature = sign(&key_pair, &request, timestamp)?;
 
     let external_request = EventRequest {
-        request,
+        request: request_body,
         timestamp: TimeStamp { time: timestamp as u64 },
         signature,
     };
@@ -45,10 +48,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn sign(
     keys: &KeyPair,
-    data: &EventRequestTypeBody,
+    data: &EventRequestType,
     timestamp: i64,
 ) -> Result<Signature, Box<dyn std::error::Error>> {
-    let hash = DigestIdentifier::from_serializable_borsh(&(data, timestamp))?;
+    let hash = DigestIdentifier::from_serializable_borsh((&data, &timestamp))?;
     let signature = keys.sign(Payload::Buffer(hash.derivative()))?;
     let identifier = generate_identifier(&keys);
     Ok(Signature {
