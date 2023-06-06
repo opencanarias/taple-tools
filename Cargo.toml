@@ -15,8 +15,8 @@ license = "AGPL-3.0-only"
 keywords = ["blockchain", "distributed-ledger", "taple", "sustainability"]
 
 [workspace.dependencies]
-# taple-core = { git = "https://github.com/opencanarias/taple-core" }
-taple-core = { path = "../taple-core/core" }
+taple-core = { git = "https://github.com/opencanarias/taple-core" }
+# taple-core = { path = "../taple-core/core" }
 clap = { version = "4.0.27", features = ["derive"] }
 hex = "0.4.3"
 libp2p = { version = "0.50.0", features = ["secp256k1"] }
