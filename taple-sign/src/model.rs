@@ -3,27 +3,43 @@ use std::str::FromStr;
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 use taple_core::{
-    event_request::CreateRequest as TCreateRequest, event_request::StateRequest as TStateRequest,
-    EventRequestType, TimeStamp, DigestIdentifier,
+    event_request::CreateRequest as TCreateRequest, event_request::EOLRequest as TEOLRequest,
+    event_request::StateRequest as TStateRequest,
+    event_request::TransferRequest as TTreansferRequest, DigestIdentifier, EventRequestType,
+    KeyIdentifier, TimeStamp,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 pub enum EventRequestTypeBody {
     Create(CreateRequest),
     State(StateRequest),
+    Transfer(TransferRequest),
+    EOL(EOLRequest),
 }
 
 impl Into<EventRequestType> for EventRequestTypeBody {
     fn into(self) -> EventRequestType {
         match self {
             Self::Create(data) => EventRequestType::Create(TCreateRequest {
-                governance_id: DigestIdentifier::from_str(&data.governance_id).expect("Should be DigestIdentifier"),
+                governance_id: DigestIdentifier::from_str(&data.governance_id)
+                    .expect("Should be DigestIdentifier"),
                 schema_id: data.schema_id,
                 namespace: data.namespace,
             }),
             Self::State(data) => EventRequestType::State(TStateRequest {
-                subject_id: DigestIdentifier::from_str(&data.subject_id).expect("Should be DigestIdentifier"),
+                subject_id: DigestIdentifier::from_str(&data.subject_id)
+                    .expect("Should be DigestIdentifier"),
                 invokation: data.invokation,
+            }),
+            Self::Transfer(data) => EventRequestType::Transfer(TTreansferRequest {
+                subject_id: DigestIdentifier::from_str(&data.subject_id)
+                    .expect("Should be DigestIdentifier"),
+                public_key: KeyIdentifier::from_str(&data.subject_pub_key)
+                    .expect("Should be KeyIdentifier"),
+            }),
+            Self::EOL(data) => EventRequestType::EOL(TEOLRequest {
+                subject_id: DigestIdentifier::from_str(&data.subject_id)
+                    .expect("Should be DigestIdentifier"),
             }),
         }
     }
@@ -40,6 +56,17 @@ pub struct CreateRequest {
 pub struct StateRequest {
     pub subject_id: String,
     pub invokation: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+pub struct TransferRequest {
+    pub subject_id: String,
+    pub subject_pub_key: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+pub struct EOLRequest {
+    pub subject_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
