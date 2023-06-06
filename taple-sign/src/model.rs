@@ -3,7 +3,8 @@ use std::str::FromStr;
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 use taple_core::{
-    event_request::CreateRequest as TCreateRequest, event_request::StateRequest as TStateRequest,
+    event_request::CreateRequest as TCreateRequest, event_request::EOLRequest as TEOLRequest,
+    event_request::StateRequest as TStateRequest,
     event_request::TransferRequest as TTreansferRequest, DigestIdentifier, EventRequestType,
     KeyIdentifier, TimeStamp,
 };
@@ -13,6 +14,7 @@ pub enum EventRequestTypeBody {
     Create(CreateRequest),
     State(StateRequest),
     Transfer(TransferRequest),
+    EOL(EOLRequest),
 }
 
 impl Into<EventRequestType> for EventRequestTypeBody {
@@ -35,6 +37,10 @@ impl Into<EventRequestType> for EventRequestTypeBody {
                 public_key: KeyIdentifier::from_str(&data.subject_pub_key)
                     .expect("Should be KeyIdentifier"),
             }),
+            Self::EOL(data) => EventRequestType::EOL(TEOLRequest {
+                subject_id: DigestIdentifier::from_str(&data.subject_id)
+                    .expect("Should be DigestIdentifier"),
+            }),
         }
     }
 }
@@ -56,6 +62,11 @@ pub struct StateRequest {
 pub struct TransferRequest {
     pub subject_id: String,
     pub subject_pub_key: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+pub struct EOLRequest {
+    pub subject_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
