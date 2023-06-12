@@ -4,7 +4,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 use taple_core::{
     event_request::CreateRequest as TCreateRequest, event_request::EOLRequest as TEOLRequest,
-    event_request::StateRequest as TStateRequest,
+    event_request::FactRequest as TFactRequest,
     event_request::TransferRequest as TTreansferRequest, DigestIdentifier, EventRequestType,
     KeyIdentifier, TimeStamp,
 };
@@ -12,7 +12,7 @@ use taple_core::{
 #[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 pub enum EventRequestTypeBody {
     Create(CreateRequest),
-    State(StateRequest),
+    Fact(FactRequest),
     Transfer(TransferRequest),
     EOL(EOLRequest),
 }
@@ -26,10 +26,10 @@ impl Into<EventRequestType> for EventRequestTypeBody {
                 schema_id: data.schema_id,
                 namespace: data.namespace,
             }),
-            Self::State(data) => EventRequestType::State(TStateRequest {
+            Self::Fact(data) => EventRequestType::Fact(TFactRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
                     .expect("Should be DigestIdentifier"),
-                invokation: data.invokation,
+                payload: data.payload,
             }),
             Self::Transfer(data) => EventRequestType::Transfer(TTreansferRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
@@ -53,9 +53,9 @@ pub struct CreateRequest {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
-pub struct StateRequest {
+pub struct FactRequest {
     pub subject_id: String,
-    pub invokation: String,
+    pub payload: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
@@ -85,6 +85,5 @@ pub struct SignatureContent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventRequest {
     pub request: EventRequestTypeBody,
-    pub timestamp: TimeStamp,
     pub signature: Signature,
 }

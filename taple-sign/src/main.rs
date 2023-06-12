@@ -38,7 +38,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let external_request = EventRequest {
         request: request_body,
-        timestamp: TimeStamp { time: timestamp as u64 },
         signature,
     };
     let result: String = serde_json::to_string_pretty(&external_request)?;
