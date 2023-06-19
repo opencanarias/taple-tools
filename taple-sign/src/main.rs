@@ -1,9 +1,8 @@
 use chrono::Utc;
 use clap::Parser;
-use taple_core::{TimeStamp, EventRequestType};
 use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA};
 use taple_core::identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier};
-
+use taple_core::{EventRequestType, TimeStamp};
 
 mod model;
 use model::*;
@@ -33,8 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let request_body: EventRequestTypeBody = serde_json::from_str(&request)?;
     let request: EventRequestType = request_body.clone().into();
 
-    let timestamp = Utc::now().timestamp_millis();
-    let signature: Signature = sign(&key_pair, &request, timestamp)?;
+    let signature: Signature = sign(&key_pair, &request)?;
 
     let external_request = EventRequest {
         request: request_body,
@@ -45,21 +43,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn sign(
-    keys: &KeyPair,
-    data: &EventRequestType,
-    timestamp: i64,
-) -> Result<Signature, Box<dyn std::error::Error>> {
-    let hash = DigestIdentifier::from_serializable_borsh((&data, &timestamp))?;
-    let signature = keys.sign(Payload::Buffer(hash.derivative()))?;
+fn sign(keys: &KeyPair, data: &EventRequestType) -> Result<Signature, Box<dyn std::error::Error>> {
+    let content_hash = DigestIdentifier::from_serializable_borsh(&data)?;
+    let timestamp = TimeStamp::now();
+    let signature_hash = DigestIdentifier::from_serializable_borsh((&content_hash, &timestamp))?;
+    let signature = keys.sign(Payload::Buffer(signature_hash.derivative()))?;
     let identifier = generate_identifier(&keys);
     Ok(Signature {
         content: SignatureContent {
             signer: identifier.to_str(),
-            event_content_hash: hash.to_str(),
-            timestamp: TimeStamp::now(),
+            event_content_hash: content_hash.to_str(),
+            timestamp,
         },
-        signature: SignatureIdentifier::new(identifier.to_signature_derivator(), &signature).to_str(),
+        signature: SignatureIdentifier::new(identifier.to_signature_derivator(), &signature)
+            .to_str(),
     })
 }
 
