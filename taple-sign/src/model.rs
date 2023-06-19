@@ -25,6 +25,9 @@ impl Into<EventRequestType> for EventRequestTypeBody {
                     .expect("Should be DigestIdentifier"),
                 schema_id: data.schema_id,
                 namespace: data.namespace,
+                name: data.name,
+                public_key: KeyIdentifier::from_str(&data.public_key)
+                    .expect("Should be KeyIdentifier"),
             }),
             Self::Fact(data) => EventRequestType::Fact(TFactRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
@@ -50,6 +53,8 @@ pub struct CreateRequest {
     pub governance_id: String,
     pub schema_id: String,
     pub namespace: String,
+    pub name: String,
+    pub public_key: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
