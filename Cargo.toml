@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["taple-keygen", "taple-sign"]
+members = ["taple-keygen", "taple-sign", "taple-patch"]
 
 [workspace.package]
 version = "0.2.0-dev"
@@ -15,8 +15,7 @@ license = "AGPL-3.0-only"
 keywords = ["blockchain", "distributed-ledger", "taple", "sustainability"]
 
 [workspace.dependencies]
-# taple-core = { git = "https://github.com/opencanarias/taple-core" }
-taple-core = { path = "../taple-core/core" }
+taple-core = { git = "https://github.com/opencanarias/taple-core" }
 clap = { version = "4.0.27", features = ["derive"] }
 hex = "0.4.3"
 libp2p = { version = "0.50.0", features = ["secp256k1"] }
@@ -24,6 +23,9 @@ serde = "1.0.160"
 serde_json = "1.0"
 chrono = { version = "0.4", features = ["clock"] }
 borsh = "0.9.3"
+json-patch = "~1"
+thiserror = "~1.0"
+
 
 [profile.release]
 lto = true
