@@ -1,15 +1,14 @@
 use std::str::FromStr;
 
-use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 use taple_core::{
-    event_request::CreateRequest as TCreateRequest, event_request::EOLRequest as TEOLRequest,
-    event_request::FactRequest as TFactRequest,
-    event_request::TransferRequest as TTreansferRequest, DigestIdentifier, EventRequestType,
-    KeyIdentifier, TimeStamp,
+    request::StartRequest as TCreateRequest, request::EOLRequest as TEOLRequest,
+    request::FactRequest as TFactRequest,
+    request::TransferRequest as TTreansferRequest, DigestIdentifier, EventRequest,
+    KeyIdentifier, ValueWrapper,
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EventRequestTypeBody {
     Create(CreateRequest),
     Fact(FactRequest),
@@ -17,10 +16,10 @@ pub enum EventRequestTypeBody {
     EOL(EOLRequest),
 }
 
-impl Into<EventRequestType> for EventRequestTypeBody {
-    fn into(self) -> EventRequestType {
+impl Into<EventRequest> for EventRequestTypeBody {
+    fn into(self) -> EventRequest {
         match self {
-            Self::Create(data) => EventRequestType::Create(TCreateRequest {
+            Self::Create(data) => EventRequest::Create(TCreateRequest {
                 governance_id: DigestIdentifier::from_str(&data.governance_id)
                     .expect("Should be DigestIdentifier"),
                 schema_id: data.schema_id,
@@ -29,18 +28,18 @@ impl Into<EventRequestType> for EventRequestTypeBody {
                 public_key: KeyIdentifier::from_str(&data.public_key)
                     .expect("Should be KeyIdentifier"),
             }),
-            Self::Fact(data) => EventRequestType::Fact(TFactRequest {
+            Self::Fact(data) => EventRequest::Fact(TFactRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
                     .expect("Should be DigestIdentifier"),
-                payload: data.payload,
+                payload: ValueWrapper(data.payload),
             }),
-            Self::Transfer(data) => EventRequestType::Transfer(TTreansferRequest {
+            Self::Transfer(data) => EventRequest::Transfer(TTreansferRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
                     .expect("Should be DigestIdentifier"),
                 public_key: KeyIdentifier::from_str(&data.subject_pub_key)
                     .expect("Should be KeyIdentifier"),
             }),
-            Self::EOL(data) => EventRequestType::EOL(TEOLRequest {
+            Self::EOL(data) => EventRequest::EOL(TEOLRequest {
                 subject_id: DigestIdentifier::from_str(&data.subject_id)
                     .expect("Should be DigestIdentifier"),
             }),
@@ -48,7 +47,7 @@ impl Into<EventRequestType> for EventRequestTypeBody {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateRequest {
     pub governance_id: String,
     pub schema_id: String,
@@ -57,38 +56,33 @@ pub struct CreateRequest {
     pub public_key: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FactRequest {
     pub subject_id: String,
-    pub payload: String,
+    pub payload: serde_json::Value,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransferRequest {
     pub subject_id: String,
     pub subject_pub_key: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EOLRequest {
     pub subject_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Signature {
-    pub content: SignatureContent,
-    pub signature: String, // SignatureIdentifier
+pub struct SignatureBody {
+    pub signer: String, // KeyIdentifier
+    pub timestamp: u64,
+    pub value: String, // SignatureIdentifier,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SignatureContent {
-    pub signer: String,
-    pub event_content_hash: String,
-    pub timestamp: TimeStamp,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventRequest {
-    pub request: EventRequestTypeBody,
-    pub signature: Signature,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SignedEventRequest {
+    #[serde(rename = "request")]
+    pub content: EventRequestTypeBody,
+    pub signature: SignatureBody
 }

@@ -1,8 +1,7 @@
-use chrono::Utc;
 use clap::Parser;
-use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair, Payload, DSA};
-use taple_core::identifier::{Derivable, DigestIdentifier, KeyIdentifier, SignatureIdentifier};
-use taple_core::{EventRequestType, TimeStamp};
+use taple_core::crypto::{Ed25519KeyPair, KeyGenerator, KeyMaterial, KeyPair};
+use taple_core::identifier::{Derivable, KeyIdentifier};
+use taple_core::{signature::Signature, EventRequest};
 
 mod model;
 use model::*;
@@ -30,34 +29,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
     let request_body: EventRequestTypeBody = serde_json::from_str(&request)?;
-    let request: EventRequestType = request_body.clone().into();
+    let request: EventRequest = request_body.clone().into();
 
-    let signature: Signature = sign(&key_pair, &request)?;
+    let signer = generate_identifier(&key_pair);
+    let signature: Signature = Signature::new(&request, signer, &key_pair)?;
 
-    let external_request = EventRequest {
-        request: request_body,
-        signature,
+    let external_request = SignedEventRequest {
+        content: request_body,
+        signature: SignatureBody {
+            signer: signature.signer.to_str(),
+            timestamp: signature.timestamp.0,
+            value: signature.value.to_str(),
+        },
     };
     let result: String = serde_json::to_string_pretty(&external_request)?;
     println!("{}", result);
     Ok(())
-}
-
-fn sign(keys: &KeyPair, data: &EventRequestType) -> Result<Signature, Box<dyn std::error::Error>> {
-    let content_hash = DigestIdentifier::from_serializable_borsh(&data)?;
-    let timestamp = TimeStamp::now();
-    let signature_hash = DigestIdentifier::from_serializable_borsh((&content_hash, &timestamp))?;
-    let signature = keys.sign(Payload::Buffer(signature_hash.derivative()))?;
-    let identifier = generate_identifier(&keys);
-    Ok(Signature {
-        content: SignatureContent {
-            signer: identifier.to_str(),
-            event_content_hash: content_hash.to_str(),
-            timestamp,
-        },
-        signature: SignatureIdentifier::new(identifier.to_signature_derivator(), &signature)
-            .to_str(),
-    })
 }
 
 fn generate_identifier(keys: &KeyPair) -> KeyIdentifier {
