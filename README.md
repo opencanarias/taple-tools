@@ -1,10 +1,10 @@
 <div align="center">
-<p>⚠️ <b>TAPLE is in early development and <a href="https://www.taple.es/community/DISCLAIMER/">should not be used in production</a></b> ⚠️</p>
+<p>⚠️ <b>This repository has been archived and will remain in read-only mode. The TAPLE-Tools are now part of <a href="https://github.com/opencanarias/taple-client">TAPLE-Client</a>.</b> ⚠️</p>
 <br/>
 <p><img src="https://raw.githubusercontent.com/opencanarias/public-resources/master/images/taple-logo-readme.png"></p>
 </div>
 
-## The main branch is the pre-release, development version of `TAPLE`. Please see the [0.1](https://github.com/opencanarias/taple-tools/tree/release-0.1) branch for the latest versions released.
+
 
 # TAPLE Tools
 
@@ -22,7 +22,7 @@ TAPLE Tools is a set of tools that make it easier for the operator to manage a T
 [agpl-badge]: https://img.shields.io/badge/license-AGPL-blue.svg
 [agpl-url]: https://github.com/opencanarias/taple-core/blob/master/LICENSE
 
-[Technology](https://www.taple.es) | [Develop](https://www.taple.es/docs/develop) | [Core](https://github.com/opencanarias/taple-core) | [Client](https://github.com/opencanarias/taple-client) | [Tools](https://github.com/opencanarias/taple-tools)
+[Technology](https://www.taple.es) | [Develop](https://www.taple.es/docs/develop) | [Core](https://github.com/opencanarias/taple-core) | [Client](https://github.com/opencanarias/taple-client) 
 
 ## Usage
 You can choose how to use the tools by either compiling the code and running them natively or through the Docker image.
